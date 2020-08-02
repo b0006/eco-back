@@ -12,7 +12,7 @@ export class UsersService {
     return this.userModel.find().exec();
   }
 
-  async findOne(username: string): Promise<User> {
-    return this.userModel.findOne({ username }).exec();
+  async findOne(username: string): Promise<Partial<User>> {
+    return this.userModel.findOne({ username }).lean(true).exec();
   }
 }
