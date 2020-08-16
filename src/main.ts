@@ -2,6 +2,7 @@ declare const module: any;
 
 import { NestFactory } from '@nestjs/core';
 import { json, urlencoded } from 'body-parser';
+import { static as expressStatic } from 'express';
 
 import { AppModule } from './app.module';
 
@@ -11,6 +12,8 @@ async function bootstrap() {
   app.use(urlencoded({ extended: true }));
   // parse application/json
   app.use(json());
+
+  app.use('/uploads', expressStatic('uploads'));
 
   app.enableCors({
     origin: 'http://localhost:3000',

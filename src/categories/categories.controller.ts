@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Request, Post, Body, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Delete, UseGuards, Request, Post, Body, UseInterceptors } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 
@@ -7,21 +7,30 @@ import { editFileName } from '../utils/upload';
 
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
+import { Category } from './categories.schema';
+
+const convertCategory = (categoryDataDB: Category, url: string) => {
+  return {
+    id: categoryDataDB._id,
+    title: categoryDataDB.title,
+    imageList: categoryDataDB.imageList.map((relativePath) => `${url}/${relativePath}`)
+  }
+}
 
 @Controller('categories')
 export class CategoriesController {
   constructor(private categoriesService: CategoriesService) {}
 
-  @UseGuards(JwtAuthGuard)
   @Get()
-  async findAll() {
-    return this.categoriesService.findAll();
+  async findAll(@Request() req) {
+    const url = `${req.protocol}://${req.headers.host}`;
+    const list = await this.categoriesService.findAll();
+    return list.map((category) => convertCategory(category, url));
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Get('/:id')
-  getProfile(@Request() req) {
-    return this.categoriesService.findById(req.params.id);
+  @Delete('/:id')
+  removeById(@Request() req) {
+    return this.categoriesService.removeById(req.params.id);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -33,9 +42,9 @@ export class CategoriesController {
     }),
   }))
   async create(@Request() req, @Body() createCategoryDto: CreateCategoryDto) {
-    console.log(req.files);
-    console.log(createCategoryDto);
-    return { status: true };
-    // return this.categoriesService.create(createCategoryDto);
+    const url = `${req.protocol}://${req.headers.host}`;
+    const imagePathList = req.files.map((file) => file.path);
+    const newCategory = await this.categoriesService.create(createCategoryDto.title, imagePathList);
+    return convertCategory(newCategory, url);
   }
 }
