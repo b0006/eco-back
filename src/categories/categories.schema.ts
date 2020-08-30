@@ -7,6 +7,9 @@ export class Category extends Document {
   title: string;
 
   @Prop({ required: true })
+  value: string;
+
+  @Prop({ required: true })
   imageList: string[];
 }
 

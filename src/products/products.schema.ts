@@ -1,16 +1,16 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 
-interface IBadge {
+export interface IBadge {
   isExclusive: boolean;
   isNew: boolean;
   isHit: boolean;
   isBack: boolean;
 }
 
-interface IProperties {
+export interface IProperty {
   title: string;
-  type: 'select' | 'checkbox';
+  type: 'select' | 'checkbox' | 'radio';
   values: Array<{ label: string; value: string }>;
 }
 
@@ -42,7 +42,7 @@ export class Product extends Document {
   badge: IBadge;
 
   @Prop({ required: false, default: [] })
-  properties: IProperties[];
+  properties: IProperty[];
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);

@@ -2,6 +2,8 @@ import { Model } from 'mongoose';
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
+import { rusToLatin } from '../utils/string';
+
 import { Category } from './categories.schema';
 
 @Injectable()
@@ -16,13 +18,14 @@ export class CategoriesService {
     return this.categoryModel.findOne({ _id: id }).lean(true).exec();
   }
 
-  async create(title: string, imagePathList: string[]): Promise<Category> {
-    const findCategory = await this.categoryModel.findOne({ title });
+  async create(title: string, imageList: string[]): Promise<Category> {
+    const value = rusToLatin(title);
+    const findCategory = await this.categoryModel.findOne({ value });
     if (findCategory) {
       throw new HttpException('Категория уже существует', HttpStatus.CONFLICT);
     }
 
-    return this.categoryModel.create({ title: title, imageList: imagePathList });
+    return this.categoryModel.create({ title, value, imageList });
   }
 
   async removeById(id: string) {

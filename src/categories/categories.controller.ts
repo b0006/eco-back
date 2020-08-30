@@ -13,6 +13,7 @@ const convertCategory = (categoryDataDB: Category, url: string) => {
   return {
     id: categoryDataDB._id,
     title: categoryDataDB.title,
+    value: categoryDataDB.value,
     imageList: categoryDataDB.imageList.map((relativePath) => `${url}/${relativePath}`)
   }
 }
