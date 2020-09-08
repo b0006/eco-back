@@ -13,12 +13,11 @@ async function bootstrap() {
   // parse application/json
   app.use(json());
 
-  app.use('/uploads', expressStatic('uploads'));
-
   app.enableCors({
     origin: 'http://localhost:3000',
-    methods: '*',
-  })
+  });
+
+  app.use('/uploads', expressStatic('uploads'));
   await app.listen(5000);
 
   if (module.hot) {
