@@ -2,6 +2,7 @@ declare const module: any;
 
 import { NestFactory } from '@nestjs/core';
 import { json, urlencoded } from 'body-parser';
+import * as cookieParser from 'cookie-parser';
 import { static as expressStatic } from 'express';
 
 import { AppModule } from './app.module';
@@ -13,11 +14,14 @@ async function bootstrap() {
   // parse application/json
   app.use(json());
 
+  app.use(cookieParser());
+
   app.enableCors({
     origin: 'http://localhost:3000',
   });
 
   app.use('/uploads', expressStatic('uploads'));
+
   await app.listen(5000);
 
   if (module.hot) {

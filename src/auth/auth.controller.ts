@@ -1,5 +1,8 @@
 import { Controller, Request, Post, Query, UseGuards, HttpCode, Get } from '@nestjs/common';
 import axios from 'axios';
+import * as https from 'https';
+// import * as request from 'request';
+// import * as FormData from 'form-data';
 
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './local-auth.guard';
@@ -32,6 +35,19 @@ interface IGoogleResponseData {
   id_token: string;
 }
 
+const YANDEX_DATA = {
+  grant_type: 'authorization_code',
+  client_id: '2ddef3a44a3f403fb1c5c8a6946767ba',
+  client_secret: '4f85c7fdf1104ef8b5ee8dad0e52fa59',
+};
+
+interface IYandexResponseData {
+  access_token: string;
+  expires_in: number;
+  refresh_token?: string;
+  token_type: string;
+}
+
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
@@ -54,6 +70,7 @@ export class AuthController {
           params: { access_token: data.access_token, user_ids: data.user_id, v: '5.122' }
         })
           .then(res => {
+            // получены данные о пользователе
             console.log(res.data)
           })
           .catch(err => {
@@ -78,6 +95,7 @@ export class AuthController {
           params: {...GOOGLE_DATA, access_token: data.access_token}
         })
           .then(res => {
+            // получены данные о пользователе
             console.log(res)
           })
           .catch(err => {
@@ -88,7 +106,60 @@ export class AuthController {
         console.log(error);
       });
 
-    console.log(code);
     return { status: true, code, type: 'Google' };
+  };
+
+  @Get('yandex/callback')
+  async yandexCallback(@Request() req, @Query('code') code: string) {
+    const formData = { ...YANDEX_DATA, code };
+
+    const postData = new URLSearchParams(formData).toString();
+
+    const options = {
+      hostname: 'oauth.yandex.ru',
+      path: '/token',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Length': Buffer.byteLength(postData)
+     }
+    };
+
+    const request = https.request(options, (res) => {
+      let data = '';
+
+      res.setEncoding('utf8');
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
+      res.on('end', () => {
+        console.log(JSON.parse(data));
+        const jsonData: IYandexResponseData = JSON.parse(data);
+
+        axios.get('https://login.yandex.ru/info', {
+          params: {
+            format: 'json',
+            oauth_token: jsonData.access_token,
+          }
+        }).then(res => {
+          // получены данные о пользователе
+          console.log(res.data);
+        }).catch(err => {
+          console.log(err);
+        })
+
+      })
+      res.on('end', () => {
+        console.log('No more data in response.');
+      });
+    });
+    
+    request.on('error', (e) => {
+      console.log(`problem with request: ${e.message}`);
+    });
+    request.write(postData);
+    request.end();
+
+    return { status: true, code, type: 'yandex' };
   };
 }
