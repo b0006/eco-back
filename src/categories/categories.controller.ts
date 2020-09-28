@@ -1,4 +1,5 @@
 import { Controller, Get, Delete, UseGuards, Request, Post, Body, UseInterceptors } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 
@@ -18,6 +19,7 @@ const convertCategory = (categoryDataDB: Category, url: string) => {
   }
 }
 
+@ApiTags('Categories')
 @Controller('categories')
 export class CategoriesController {
   constructor(private categoriesService: CategoriesService) {}
