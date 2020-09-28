@@ -20,6 +20,28 @@
     ],
     "rules": {
       "quotes": ["warn", "single"],
+      "max-len": [
+        "error",
+        {
+          "code": 120
+        }
+      ],
+      "comma-dangle": [
+        "error",
+        {
+          "arrays": "always-multiline",
+          "objects": "always-multiline",
+          "imports": "always-multiline",
+          "exports": "always-multiline",
+          "functions": "never"
+        }
+      ],
+      "no-shadow": "warn",
+      "radix": "error",
+      "no-return-await": "error",
+      "no-multi-spaces": "error",
+      "no-duplicate-imports": "error",
+      "eol-last": ["warn", "always"],
       "@typescript-eslint/interface-name-prefix": "off",
       "@typescript-eslint/explicit-function-return-type": "off",
       "@typescript-eslint/no-explicit-any": "off",

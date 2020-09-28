@@ -2,8 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class AuthLoginResponseDto {
   @ApiProperty({
-    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im9uZSIsInN1YiI6IjVmMWVkYjU11DhlMmM3NmViZjk3N2QyZSIsImlhdCI6MTYwMTI5NzgfNSwiZXhwIjoxNjAxMzAwOTI1fQ.xQGByhYPKRWym8eEfUPUwpbqYWgqXyWPln5EHa8hGVM',
-    description: 'Токен'
+    example: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im9uZSIsInN1YiI6IjVmMWVkYjU11D
+    hlMmM3NmViZjk3N2QyZSIsImlhdCI6MTYwMTI5NzgfNSwiZXhwIjoxNjAxMzAwOTI1fQ.xQGByhYPKRWym8eEfUPUwpbqYWgqXyWPln5EHa8hGVM`,
+    description: 'Токен',
   })
   accessToken: string;
 
@@ -16,13 +17,13 @@ export class AuthLoginResponseDto {
     properties: {
       id: {
         type: 'string',
-        description: 'Идентификатор пользователя'
+        description: 'Идентификатор пользователя',
       },
       username: {
         type: 'string',
-        description: 'Имя пользователя'
-      }
-    }
+        description: 'Имя пользователя',
+      },
+    },
   })
   userData: {
     id: string,
