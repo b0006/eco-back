@@ -22,6 +22,7 @@ async function bootstrap() {
     .setTitle('ECO BOOM API')
     .setDescription('Описание к API')
     .setVersion('1.0')
+    .addBearerAuth({ in: 'header', type: 'http' })
     .build();
 
   const document = SwaggerModule.createDocument(app, options);
