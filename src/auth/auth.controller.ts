@@ -6,7 +6,7 @@ import { HttpFailed } from '../common/dto/http-failed.dto';
 import { AuthLoginDto } from './dto/login.dto';
 import { AuthLoginResponseDto } from './dto/login-response.dto';
 import { AuthService } from './auth.service';
-import { LocalAuthGuard } from './local-auth.guard';
+import { LocalAuthGuard } from './guards/local-auth.guard';
 
 @ApiTags('Auth')
 @Controller('auth')

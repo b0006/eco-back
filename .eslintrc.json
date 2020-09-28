@@ -19,6 +19,7 @@
       "prettier/@typescript-eslint"
     ],
     "rules": {
+      "object-curly-spacing": ["warn", "always"],
       "quotes": ["warn", "single"],
       "max-len": [
         "error",

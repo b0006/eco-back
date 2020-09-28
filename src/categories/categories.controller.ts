@@ -3,7 +3,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { editFileName } from '../utils/upload';
 
 import { CategoriesService } from './categories.service';
@@ -15,7 +15,7 @@ const convertCategory = (categoryDataDB: Category, url: string) => {
     id: categoryDataDB._id,
     title: categoryDataDB.title,
     value: categoryDataDB.value,
-    imageList: categoryDataDB.imageList.map((relativePath) => `${url}/${relativePath}`)
+    imageList: categoryDataDB.imageList.map((relativePath) => `${url}/${relativePath}`),
   }
 }
 

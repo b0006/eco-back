@@ -7,8 +7,8 @@ import { UsersModule } from '../users/users.module';
 import { User, UserSchema } from '../users/users.schema';
 
 import { AuthService } from './auth.service';
-import { LocalStrategy } from './local.strategy';
-import { JwtStrategy } from './jwt.strategy';
+import { LocalStrategy } from './strategies/local.strategy';
+import { JwtStrategy } from './strategies/jwt.strategy';
 import { AuthController } from './auth.controller';
 import { jwtConstants } from './constants';
 
