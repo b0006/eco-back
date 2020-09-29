@@ -14,8 +14,12 @@ export class CategoriesService {
     return this.categoryModel.find().lean(true).exec() as Promise<Category[]>;
   }
 
-  async findById(id: string): Promise<Partial<Category>> {
-    return this.categoryModel.findOne({ _id: id }).lean(true).exec();
+  async findById(id: string): Promise<Category> {
+    const category = await this.categoryModel.findOne({ _id: id }).exec();
+    if (!category) {
+      throw new HttpException('Категория не найдена', HttpStatus.CONFLICT);
+    }
+    return category;
   }
 
   async create(title: string, imageList: string[]): Promise<Category> {
@@ -28,8 +32,19 @@ export class CategoriesService {
     return this.categoryModel.create({ title, value, imageList });
   }
 
+  async update(id: string, title: string, imageList: string[]): Promise<Category> {
+    const value = rusToLatin(title);
+    const findCategory = await this.categoryModel.findByIdAndUpdate(id, { title, value, imageList });
+
+    if (!findCategory) {
+      throw new HttpException('Категория не найдена', HttpStatus.CONFLICT);
+    }
+
+    return findCategory;
+  }
+
   async removeById(id: string) {
-    const result = await this.categoryModel.remove({ _id: id });
+    const result = await this.categoryModel.deleteOne({ _id: id });
     return !!result.ok;
   }
 }

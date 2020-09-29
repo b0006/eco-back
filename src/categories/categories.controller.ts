@@ -1,5 +1,5 @@
-import { Controller, Get, Delete, UseGuards, Request, Post, Body, UseInterceptors } from '@nestjs/common';
-import { ApiTags, ApiResponse, ApiOperation, ApiBearerAuth, ApiConsumes, ApiBody } from '@nestjs/swagger';
+import { Controller, Get, Delete, UseGuards, Request, Post, Put, Body, UseInterceptors } from '@nestjs/common';
+import { ApiTags, ApiResponse, ApiOperation, ApiBearerAuth, ApiConsumes, ApiBody, ApiParam } from '@nestjs/swagger';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 
@@ -37,14 +37,48 @@ export class CategoriesController {
     return list.map((category) => convertCategory(category, url));
   }
 
+  @Get('/:id')
+  @ApiParam({ type: 'string', name: 'id', description: 'Идентификатор категории' })
+  @ApiOperation({ summary: 'Получить категорию по ID' })
+  @ApiResponse({ status: 200, description: 'Категория', type: CategoryDto })
+  @ApiResponse({ status: 401, description: 'Ошибка', type: HttpFailed })
+  async findOne(@Request() req) {
+    const url = `${req.protocol}://${req.headers.host}`;
+    const category = await this.categoriesService.findById(req.params.id);
+    return convertCategory(category, url);
+  }
+
   @UseGuards(JwtAuthGuard)
   @Delete('/:id')
   @ApiBearerAuth()
+  @ApiParam({ type: 'string', name: 'id', description: 'Идентификатор категории' })
   @ApiOperation({ summary: 'Удалить категорию по ID' })
   @ApiResponse({ status: 200, description: 'Успешно' })
   @ApiResponse({ status: 401, description: 'Ошибка', type: HttpFailed })
   removeById(@Request() req) {
     return this.categoriesService.removeById(req.params.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('/:id')
+  @ApiBearerAuth()
+  @ApiParam({ type: 'string', name: 'id', description: 'Идентификатор категории' })
+  @ApiOperation({ summary: 'Изменение категории' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ description: 'Изменение категории', type: CategoryCreateUploadDto })
+  @ApiResponse({ status: 200, description: 'Категория успешно создана', type: CategoryDto })
+  @ApiResponse({ status: 401, description: 'Ошибка', type: HttpFailed })
+  @UseInterceptors(FilesInterceptor('image', 5, {
+    storage: diskStorage({
+      destination: './uploads/categories',
+      filename: editFileName,
+    }),
+  }))
+  async update(@Request() req, @Body() createCategoryDto: CreateCategoryDto) {
+    const url = `${req.protocol}://${req.headers.host}`;
+    const imagePathList = req.files.map((file) => file.path);
+    const updatedCategory = await this.categoriesService.update(req.params.id, createCategoryDto.title, imagePathList);
+    return convertCategory(updatedCategory, url);
   }
 
   @UseGuards(JwtAuthGuard)
