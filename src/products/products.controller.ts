@@ -1,8 +1,10 @@
-import { Controller, Get, Post, UseGuards, Request } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Post, Query, Request } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiParam } from '@nestjs/swagger';
 
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { HttpFailed } from '../common/dto/http-failed.dto';
 
+import { ProductGetListDto } from './dto/product-get-list.dto.';
+import { ProductDto } from './dto/product.dto';
 import { ProductsService } from './products.service';
 
 @ApiTags('Products')
@@ -16,13 +18,21 @@ export class ProductsController {
   }
 
   @Get()
-  async findAll() {
-    return this.productService.findAll();
+  @ApiQuery({ name: 'categoryId', required: false, description: 'Идентификатор категории' })
+  @ApiQuery({ name: 'categoryValue', required: false, description: 'Значение категории' })
+  @ApiOperation({ summary: 'Получить список продуктов' })
+  @ApiResponse({ status: 200, description: 'Список продуктов', type: [ProductDto] })
+  @ApiResponse({ status: 401, description: 'Ошибка', type: HttpFailed })
+  async findAll(@Query() query: ProductGetListDto) {
+    return this.productService.findAll(query);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('/:id')
-  getProfile(@Request() req) {
+  @ApiOperation({ summary: 'Получить продукт по ID' })
+  @ApiParam({ type: 'string', name: 'id', description: 'Идентификатор продукта' })
+  @ApiResponse({ status: 200, description: 'Список продуктов', type: ProductDto })
+  @ApiResponse({ status: 401, description: 'Ошибка', type: HttpFailed })
+  async findOne(@Request() req) {
     return this.productService.findById(req.params.id);
   }
 }
