@@ -1,14 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class ProductDto {
-  @ApiProperty({ description: 'Идентификатор продукта' })
-  id: string;
-
+export class ProductCreateDto {
   @ApiProperty({ description: 'Название продукта' })
   title: string;
-
-  @ApiProperty({ description: 'Значение продукта (транслит title)' })
-  value: string;
 
   @ApiProperty({ description: 'Идентификатор категории' })
   categoryId: string;
@@ -19,12 +13,10 @@ export class ProductDto {
   @ApiProperty({ description: 'Описание продукта' })
   descriptionHtml: string;
 
-  @ApiProperty({ description: 'Список URL-изображений продукта' })
-  imageList: string[];
-
   @ApiProperty({
     description: 'Метки продукта',
     type: 'object',
+    required: false,
     properties: {
       isExclusive: {
         type: 'boolean',
@@ -54,6 +46,7 @@ export class ProductDto {
   @ApiProperty({
     description: 'Параметры продукта',
     type: 'object',
+    required: false,
     properties: {
       title: {
         type: 'string',

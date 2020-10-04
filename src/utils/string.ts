@@ -19,5 +19,5 @@ export const rusToLatin = (str: string) => {
      );
   }
   
-  return nStr.join('').toLowerCase();
+  return nStr.join('').toLowerCase().replace(/\s/g, '');
 };
