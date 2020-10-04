@@ -74,10 +74,10 @@ export class CategoriesController {
       filename: editFileName,
     }),
   }))
-  async update(@Request() req, @Body() createCategoryDto: CreateCategoryDto) {
+  async update(@Request() req, @Body() updateCategoryDto: CreateCategoryDto) {
     const url = `${req.protocol}://${req.headers.host}`;
     const imagePathList = req.files.map((file) => file.path);
-    const updatedCategory = await this.categoriesService.update(req.params.id, createCategoryDto.title, imagePathList);
+    const updatedCategory = await this.categoriesService.update(req.params.id, imagePathList, updateCategoryDto.title);
     return convertCategory(updatedCategory, url);
   }
 

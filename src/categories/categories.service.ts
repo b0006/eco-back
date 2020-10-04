@@ -32,9 +32,20 @@ export class CategoriesService {
     return this.categoryModel.create({ title, value, imageList });
   }
 
-  async update(id: string, title: string, imageList: string[]): Promise<Category> {
-    const value = rusToLatin(title);
-    const findCategory = await this.categoryModel.findByIdAndUpdate(id, { title, value, imageList });
+  async update(id: string, imageList: string[], title?: string): Promise<Category> {
+    let dataForUpdate: Partial<Category> = {};
+    if (title) {
+      dataForUpdate = {
+        ...dataForUpdate,
+        title,
+        value: rusToLatin(title),
+      };
+    }
+    if (imageList.length) {
+      dataForUpdate.imageList = imageList;
+    }
+
+    const findCategory = await this.categoryModel.findByIdAndUpdate(id, dataForUpdate);
 
     if (!findCategory) {
       throw new HttpException('Категория не найдена', HttpStatus.CONFLICT);

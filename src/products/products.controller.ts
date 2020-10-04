@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Query, Request, Body, UseGuards, Delete, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Post, Query, Request, Body, UseGuards, Delete, Put, UseInterceptors } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -22,6 +22,7 @@ import { ProductsService } from './products.service';
 import { ProductCreateDto } from './dto/product-create.dto';
 import { Product } from './products.schema';
 import { ProductCreateUploadDto } from './dto/product-create-upload.dto';
+import { ProductUpdateUploadDto } from './dto/product-update-upload.dto';
 
 const convertProduct = (productDataDB: Product, url: string) => {
   return {
@@ -44,7 +45,7 @@ export class ProductsController {
   async findAll(@Request() req, @Query() query: ProductGetListDto) {
     const url = `${req.protocol}://${req.headers.host}`;
     const productList = await this.productService.findAll(query);
-    return productList.map((category) => convertProduct(category, url));
+    return productList.map((product) => convertProduct(product, url));
   }
 
   @Get('/:id')
@@ -86,5 +87,27 @@ export class ProductsController {
   @ApiResponse({ status: 401, description: 'Ошибка', type: HttpFailed })
   removeById(@Request() req) {
     return this.productService.removeById(req.params.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('/:id')
+  @ApiBearerAuth()
+  @ApiParam({ type: 'string', name: 'id', description: 'Идентификатор продукта' })
+  @ApiOperation({ summary: 'Изменение продукта' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ description: 'Изменение продукта', type: ProductUpdateUploadDto })
+  @ApiResponse({ status: 200, description: 'Продукт успешно создан', type: ProductDto })
+  @ApiResponse({ status: 401, description: 'Ошибка', type: HttpFailed })
+  @UseInterceptors(FilesInterceptor('imageList', 5, {
+    storage: diskStorage({
+      destination: './uploads/products',
+      filename: editFileName,
+    }),
+  }))
+  async update(@Request() req, @Body() data: Partial<Product>) {
+    const url = `${req.protocol}://${req.headers.host}`;
+    const imagePathList = req.files.map((file) => file.path);
+    const updatedProduct = await this.productService.update(req.params.id, data, imagePathList);
+    return convertProduct(updatedProduct, url);
   }
 }
