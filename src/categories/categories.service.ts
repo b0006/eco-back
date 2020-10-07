@@ -45,13 +45,13 @@ export class CategoriesService {
       dataForUpdate.imageList = imageList;
     }
 
-    const findCategory = await this.categoryModel.findByIdAndUpdate(id, dataForUpdate);
+    const findCategory = await this.categoryModel.findOneAndUpdate({ _id: id }, dataForUpdate);
 
     if (!findCategory) {
       throw new HttpException('Категория не найдена', HttpStatus.CONFLICT);
     }
 
-    return findCategory;
+    return this.findById(id);
   }
 
   async removeById(id: string) {
